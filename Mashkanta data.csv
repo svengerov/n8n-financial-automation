@@ -1,0 +1,4 @@
+﻿id,mashkanta_amount,years,route_type,nominal_rate_madad,fixed_rate,mihzur_amount,mihzur_month,mihzur_type,createdAt,updatedAt
+1,200000,20,Prime,3,4,100000,9,Tkufa,2026-03-18T06:05:48.308Z,2026-03-18T09:30:10.408Z
+2,250000,20,Madad,3,4,100000,8,Tkufa,2026-03-18T06:09:09.173Z,2026-03-18T12:56:01.370Z
+3,300000,20,Fixed,3,3.95,150000,4,Tkufa,2026-03-18T09:05:07.030Z,2026-03-19T08:19:35.347Z

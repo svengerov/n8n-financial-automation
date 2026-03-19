@@ -1,0 +1,663 @@
+{
+  "name": "Mashkanta maslulim",
+  "nodes": [
+    {
+      "parameters": {
+        "url": "https://www.boi.org.il/en/economic-roles/monetary-policy/",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "User-Agent",
+              "value": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36"
+            }
+          ]
+        },
+        "options": {
+          "batching": {
+            "batch": {
+              "batchSize": 5
+            }
+          },
+          "response": {
+            "response": {
+              "responseFormat": "text"
+            }
+          }
+        }
+      },
+      "id": "ce9f3c63-38de-4235-a292-11639c1f1f63",
+      "name": "Fetch Info about prime",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        3440,
+        1312
+      ]
+    },
+    {
+      "parameters": {
+        "url": "https://www.boi.org.il/en/",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        3424,
+        1472
+      ],
+      "id": "9ddfe4d6-b746-4276-8363-893b5fa39b1e",
+      "name": "Fetch info about MADAD",
+      "notes": "Percentage Change Index number"
+    },
+    {
+      "parameters": {
+        "operation": "extractHtmlContent",
+        "extractionValues": {
+          "values": [
+            {
+              "cssSelector": "div.inflation .interestAndInflationValue"
+            }
+          ]
+        },
+        "options": {
+          "cleanUpText": true
+        }
+      },
+      "type": "n8n-nodes-base.html",
+      "typeVersion": 1.2,
+      "position": [
+        3632,
+        1456
+      ],
+      "id": "3b47c38a-2af7-47e2-bc63-9399504d8622",
+      "name": "HTML"
+    },
+    {
+      "parameters": {
+        "fromEmail": "hit0408@gmail.com",
+        "toEmail": "hit0408@gmail.com",
+        "subject": "Financial decision",
+        "emailFormat": "text",
+        "text": "={{ $json.text.split('\"message\": \"')[1].split('\"}')[0].replace(/\\\\n/g, '\\n') }}",
+        "options": {}
+      },
+      "id": "b8327aba-75dc-41d5-8086-eb61d9c8de19",
+      "name": "Send Mortgage Payment Plan",
+      "type": "n8n-nodes-base.emailSend",
+      "typeVersion": 2.1,
+      "position": [
+        3808,
+        1040
+      ],
+      "webhookId": "a338508d-6074-47cd-896f-3fb0a4d9519e",
+      "executeOnce": true,
+      "disabled": true
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        2416,
+        1296
+      ],
+      "id": "00b4db90-3e6f-42e4-a8a3-8abde9d2ce28",
+      "name": "When clicking ‘Execute workflow’"
+    },
+    {
+      "parameters": {
+        "operation": "get",
+        "dataTableId": {
+          "__rl": true,
+          "value": "dx9zDGHZ6pLY2XNG",
+          "mode": "list",
+          "cachedResultName": "Mashkanta data",
+          "cachedResultUrl": "/projects/j795169smJuU8M4P/datatables/dx9zDGHZ6pLY2XNG"
+        },
+        "returnAll": true
+      },
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1.1,
+      "position": [
+        2640,
+        1296
+      ],
+      "id": "aea73421-1a03-450c-86c7-fa13411fd969",
+      "name": "Get mortrage data"
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.route_type }}",
+                    "rightValue": "Prime",
+                    "operator": {
+                      "type": "string",
+                      "operation": "contains"
+                    },
+                    "id": "788c34ed-7b10-45a1-9184-07ee94fa5721"
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Prime"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "id": "56710863-3012-43a3-9ca7-5bc289f77dc0",
+                    "leftValue": "={{ $json.route_type }}",
+                    "rightValue": "Madad",
+                    "operator": {
+                      "type": "string",
+                      "operation": "contains"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Madad"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "id": "3e4b88cc-3880-4bb9-99d5-f7f2007c06ae",
+                    "leftValue": "={{ $json.route_type }}",
+                    "rightValue": "Fixed",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Fixed"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.4,
+      "position": [
+        3136,
+        1440
+      ],
+      "id": "f9953800-ef05-427e-865d-159807d3c5f5",
+      "name": "Switch routes"
+    },
+    {
+      "parameters": {
+        "operation": "extractHtmlContent",
+        "extractionValues": {
+          "values": [
+            {
+              "cssSelector": ".title"
+            }
+          ]
+        },
+        "options": {
+          "cleanUpText": true
+        }
+      },
+      "type": "n8n-nodes-base.html",
+      "typeVersion": 1.2,
+      "position": [
+        3632,
+        1296
+      ],
+      "id": "cf887019-bc72-4fb6-9a40-e41d87b1c6f0",
+      "name": "Extract main info prime"
+    },
+    {
+      "parameters": {
+        "dataTableId": {
+          "__rl": true,
+          "value": "Egy79lk3uWFdkwSU",
+          "mode": "list",
+          "cachedResultName": "Mashkanta_summary_output",
+          "cachedResultUrl": "/projects/j795169smJuU8M4P/datatables/Egy79lk3uWFdkwSU"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "loan_amount": "={{ $json.summary.original_loan }}",
+            "monthly_payment": "={{ $json.summary.monthly_payment_start }}",
+            "total_amount": "={{ $json.summary.total_paid }}",
+            "interest_rate": "={{ $json.summary.rate_used }}",
+            "months": "={{ $json.summary.actual_months }}",
+            "mihzur_amount": "={{ $('Get mortrage data').item.json.mihzur_amount }}",
+            "mihzur_month": "={{ $('Get mortrage data').item.json.mihzur_month }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "loan_amount",
+              "displayName": "loan_amount",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "monthly_payment",
+              "displayName": "monthly_payment",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "total_amount",
+              "displayName": "total_amount",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "interest_rate",
+              "displayName": "interest_rate",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "months",
+              "displayName": "months",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "mihzur_amount",
+              "displayName": "mihzur_amount",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "mihzur_month",
+              "displayName": "mihzur_month",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "readOnly": false,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1.1,
+      "position": [
+        4224,
+        1584
+      ],
+      "id": "3c9993c3-97a3-4afa-ba5e-0fe2076762ae",
+      "name": "Insert result to summary table",
+      "executeOnce": true
+    },
+    {
+      "parameters": {
+        "model": "llama3.2:3b",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmOllama",
+      "typeVersion": 1,
+      "position": [
+        3312,
+        1248
+      ],
+      "id": "c8fc82a6-ce7c-426e-a71c-d1c4a3d384e6",
+      "name": "Ollama Model",
+      "credentials": {
+        "ollamaApi": {
+          "id": "tQOnwO2aNsZwGVvv",
+          "name": "Ollama account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=\nRole: Expert Mortgage Analyst.\nTask: Identify the option with the lowest net interest (total_paid - original_loan) from the input array.\nConstraints:\n\nOutput ONLY 1-2 sentences in English.\n\nNo explanations, no code blocks, no preamble.\n\nStrictly include: Route Type, Monthly Payment, Total Interest Saved (vs original loan), and Duration.\n\nFormat: Professional and encouraging.\n\nCurrency: ILS.\n\nInput Data:\n{{ JSON.stringify($json) }}",
+        "batching": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.9,
+      "position": [
+        3424,
+        1040
+      ],
+      "id": "43aaba15-9520-41ad-8b60-59be5403192f",
+      "name": "LLM Decision"
+    },
+    {
+      "parameters": {
+        "operation": "get",
+        "dataTableId": {
+          "__rl": true,
+          "value": "Egy79lk3uWFdkwSU",
+          "mode": "list",
+          "cachedResultName": "Mashkanta_summary_output",
+          "cachedResultUrl": "/projects/j795169smJuU8M4P/datatables/Egy79lk3uWFdkwSU"
+        }
+      },
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1.1,
+      "position": [
+        2928,
+        1088
+      ],
+      "id": "afd55012-b1f0-4704-892c-366e9f53cdf4",
+      "name": "Get summary table after all calculations"
+    },
+    {
+      "parameters": {
+        "aggregate": "aggregateAllItemData",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.aggregate",
+      "typeVersion": 1,
+      "position": [
+        3248,
+        1040
+      ],
+      "id": "e325d075-dae4-4372-a056-baa24fbb272f",
+      "name": "Aggregate"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [
+        2864,
+        1296
+      ],
+      "id": "339f73fd-2275-4f07-9588-c548be6d9435",
+      "name": "Loop Over Items"
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForEachItem",
+        "jsCode": "// 1. Данные из узла\nconst tableData = $('Get mortrage data').item.json; \nlet annualRate = 0;\n\n\nconst loanAmount = Number(tableData.mashkanta_amount) || 0; \nconst years = Number(tableData.years) || 0;\nconst totalMonths = Math.ceil(years * 12);\n\nconst mihzurAmount = Number(tableData.mihzur_amount) || 0;\nconst mihzurMonth = Number(tableData.mihzur_month) || 0;\n// Берем тип из таблицы: 'Tkufa' или 'Tashlum'\nconst reductionType = tableData.mihzur_type || 'Tkufa'; \n\n// 2. Определяем ставку\n\nif (tableData.route_type === 'Prime') {\n    let text = $input.item.json[\"\"];\n    let match = text.match(/(\\d+\\.?\\d*)\\s*percent/);\n annualRate = match ? parseFloat(match[1]) + 0.75 : 0;\n\n} else if (tableData.route_type === 'Madad') {\n    annualRate = Number(tableData.nominal_rate_madad) || 4;\n\n}\nelse if (tableData.route_type === 'Fixed'){\n  annualRate = \n  Number(tableData.fixed_rate) || 4;\n}\n\nif (loanAmount <= 0 || totalMonths <= 0 || annualRate <= 0) {\n    return { error: \"Missing data\", debug: { loanAmount, totalMonths, annualRate } };\n}\n\nconst monthlyRate = (annualRate / 100) / 12;\n\nlet remainingBalance = loanAmount;\nlet schedule = [];\nlet currentMonthlyPayment = 0;\nlet totalExtraPaid = 0;\n\nfor (let month = 1; month <= totalMonths; month++) {\n    const monthsLeft = totalMonths - month + 1;\n    \n    // ЛОГИКА РАСЧЕТА ПЛАТЕЖА\n    let monthlyPayment;\n    \n    if (reductionType === 'Tkufa' && month > mihzurMonth && currentMonthlyPayment > 0) {\n        // Если сокращаем СРОК — платим столько же, сколько платили до погашения\n        monthlyPayment = currentMonthlyPayment;\n    } else {\n        // Если уменьшаем ПЛАТЕЖ (или это начало срока) — пересчитываем Шпицера\n        monthlyPayment = (remainingBalance * monthlyRate) / (1 - Math.pow(1 + monthlyRate, -monthsLeft));\n    }\n\n    const interestComponent = remainingBalance * monthlyRate;\n    const principalComponent = Math.min(monthlyPayment - interestComponent, remainingBalance);\n    \n    // Запоминаем платеж перед погашением для стратегии 'Tkufa'\n    if (month === mihzurMonth) {\n        currentMonthlyPayment = monthlyPayment;\n    }\n\n    remainingBalance -= principalComponent;\n\n    // Учет досрочного погашения\n    let actualMihzur = 0;\n    if (month === mihzurMonth && remainingBalance > 0) {\n        actualMihzur = Math.min(mihzurAmount, remainingBalance);\n        remainingBalance -= actualMihzur;\n        totalExtraPaid += actualMihzur;\n    }\n\n    schedule.push({\n        month: month,\n        payment: parseFloat((principalComponent + interestComponent + actualMihzur).toFixed(2)),\n        interest: parseFloat(interestComponent.toFixed(2)),\n        principal: parseFloat(principalComponent.toFixed(2)),\n        remaining: parseFloat(Math.max(0, remainingBalance).toFixed(2))\n    });\n\n    if (remainingBalance <= 0) break;\n}\n\nconst totalPaymentsSum = schedule.reduce((sum, item) => sum + item.payment, 0);\n\nreturn {\n    summary: {\n        route_type: tableData.route_type,\n        strategy: reductionType === 'Tkufa' ? \"Сокращение срока\" : \"Уменьшение платежа\",\n        rate_used: annualRate,\n        original_loan: loanAmount,\n        monthly_payment_start: schedule[0].payment,\n        total_paid: parseFloat(totalPaymentsSum.toFixed(2)),\n        total_interest: parseFloat((totalPaymentsSum - loanAmount).toFixed(2)),\n        actual_months: schedule.length,\n        saved_months: totalMonths - schedule.length\n    },\n    schedule: schedule\n};"
+      },
+      "id": "0b048b1d-b132-4581-b9d3-c14d2abe3419",
+      "name": "Calculate Mortgage Payment Plan",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        4032,
+        1520
+      ],
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.removeDuplicates",
+      "typeVersion": 2,
+      "position": [
+        3056,
+        976
+      ],
+      "id": "b7ea1b4d-77c7-4f32-b845-3af9e82ff87d",
+      "name": "Remove Duplicates"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Fetch Info about prime": {
+      "main": [
+        [
+          {
+            "node": "Extract main info prime",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Fetch info about MADAD": {
+      "main": [
+        [
+          {
+            "node": "HTML",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTML": {
+      "main": [
+        [
+          {
+            "node": "Calculate Mortgage Payment Plan",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "When clicking ‘Execute workflow’": {
+      "main": [
+        [
+          {
+            "node": "Get mortrage data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get mortrage data": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Switch routes": {
+      "main": [
+        [
+          {
+            "node": "Fetch Info about prime",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Fetch info about MADAD",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Calculate Mortgage Payment Plan",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract main info prime": {
+      "main": [
+        [
+          {
+            "node": "Calculate Mortgage Payment Plan",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Ollama Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "LLM Decision",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "LLM Decision": {
+      "main": [
+        [
+          {
+            "node": "Send Mortgage Payment Plan",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get summary table after all calculations": {
+      "main": [
+        [
+          {
+            "node": "Remove Duplicates",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Insert result to summary table": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Aggregate": {
+      "main": [
+        [
+          {
+            "node": "LLM Decision",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Loop Over Items": {
+      "main": [
+        [
+          {
+            "node": "Get summary table after all calculations",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Switch routes",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Calculate Mortgage Payment Plan": {
+      "main": [
+        [
+          {
+            "node": "Insert result to summary table",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Remove Duplicates": {
+      "main": [
+        [
+          {
+            "node": "Aggregate",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false
+  },
+  "versionId": "697b4287-378d-4420-af15-5ffd314527e0",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "be1d10192ab4005c38c0019e62debfb0c0664830f5cbcc0985772232bf0d95f2"
+  },
+  "id": "UM2eaR81NbPp2bu1HyGI6",
+  "tags": []
+}
